@@ -7,11 +7,35 @@ let defaultStyle = {
     color: defaultTextColor
 };
 
+let fakeServerData = {
+    user: {
+        name: 'Ern',
+        playlists: [
+            {
+                name: 'My favorites',
+                songs: ['A', 'B', 'C']
+            },
+            {
+                name: 'Workout',
+                songs: ['D', 'E', 'F']
+            },
+            {
+                name: 'Slow Jams',
+                songs: ['G', 'H', 'I']
+            },
+            {
+                name: 'Focus',
+                songs: ['J', 'K', 'L']
+            }
+        ]
+    }
+}
+
 class Aggregate extends Component {
     render() {
         return (
-            <div style={{width: "40%", display: 'inline-block'}}>
-                <h2 style={{color: defaultTextColor}}>Number Text</h2>
+            <div style={{width: "40%", display: 'inline-block', color: defaultTextColor}}>
+                <h2>{this.props.playlists && this.props.playlists.length} Text</h2>
             </div>
         );
     }
@@ -46,17 +70,33 @@ class Playlist extends Component {
 }
 
 class App extends Component {
+    constructor() {
+        super();
+        this.state = {serverData: {}};
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.setState({serverData: fakeServerData});
+        }, 1000);
+    }
   render() {
     return (
       <div className="App">
-        <h1 style={{...defaultStyle, 'font-size': '54px'}}>Title</h1>
-        <Aggregate/>
-        <Aggregate/>
-        <Filter/>
-        <Playlist/>
-        <Playlist/>
-        <Playlist/>
-        <Playlist/>
+          {this.state.serverData.user &&
+          <div>
+              <h1 style={{...defaultStyle, 'font-size': '54px'}}>
+                  {this.state.serverData.user.name}'s Playlists
+              </h1>
+              <Aggregate playlists={this.state.serverData.user.playlists}/>
+              <Aggregate/>
+              <Filter/>
+              <Playlist/>
+              <Playlist/>
+              <Playlist/>
+              <Playlist/>
+          </div>
+          }
       </div>
     );
   }
