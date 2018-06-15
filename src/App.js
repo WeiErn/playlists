@@ -114,19 +114,6 @@ class App extends Component {
     }
   render() {
 
-    let playlistElements = [];
-    if (this.state.serverData.user) {
-        for (let i = 0; i < this.state.serverData.user.playlists.length; i++){
-            let playlist = this.state.serverData.user.playlists[i];
-            playlistElements.push(<Playlist playlist={playlist} />);
-        }
-
-        // -- Alternative -- //
-        // this.state.serverData.user.playlists.forEach(playlist =>
-        //     playlistElements.push(<Playlist playlist={playlist} />)
-        // )
-    }
-
     return (
       <div className="App">
           {this.state.serverData.user ?
@@ -137,7 +124,9 @@ class App extends Component {
               <PlaylistCounter playlists={this.state.serverData.user.playlists}/>
               <HoursCounter playlists={this.state.serverData.user.playlists}/>
               <Filter/>
-              {playlistElements}
+              {this.state.serverData.user.playlists.map(playlist =>
+                  <Playlist playlist={playlist}/>
+              )}
           </div> : <h1 style={defaultStyle}>Loading...</h1>
           }
       </div>
