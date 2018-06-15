@@ -1,3 +1,7 @@
+html, body {
+  background-color: gray;
+}
+
 .App {
   text-align: center;
 }
@@ -29,5 +33,5 @@
 
 h1 {
   font-size: 54px;
-  color: #222222;
+  color: #fff;
 }
