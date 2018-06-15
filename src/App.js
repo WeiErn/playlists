@@ -83,7 +83,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-          {this.state.serverData.user &&
+          {this.state.serverData.user ?
           <div>
               <h1 style={{...defaultStyle, 'font-size': '54px'}}>
                   {this.state.serverData.user.name}'s Playlists
@@ -95,7 +95,7 @@ class App extends Component {
               <Playlist/>
               <Playlist/>
               <Playlist/>
-          </div>
+          </div> : <h1>Loading...</h1>
           }
       </div>
     );
