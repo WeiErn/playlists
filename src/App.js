@@ -90,7 +90,7 @@ class Playlist extends Component {
         return(
             <div style={{...defaultStyle, display: 'inline-block', width: "25%"}}>
                 <img />
-                <h3>Playlist Name</h3>
+                <h3>{this.props.playlist.name}</h3>
                 <ul>
                     <li>Song 1</li>
                     <li>Song 2</li>
@@ -113,6 +113,20 @@ class App extends Component {
         }, 1000);
     }
   render() {
+
+    let playlistElements = [];
+    if (this.state.serverData.user) {
+        for (let i = 0; i < this.state.serverData.user.playlists.length; i++){
+            let playlist = this.state.serverData.user.playlists[i];
+            playlistElements.push(<Playlist playlist={playlist} />);
+        }
+
+        // -- Alternative -- //
+        // this.state.serverData.user.playlists.forEach(playlist =>
+        //     playlistElements.push(<Playlist playlist={playlist} />)
+        // )
+    }
+
     return (
       <div className="App">
           {this.state.serverData.user ?
@@ -123,10 +137,7 @@ class App extends Component {
               <PlaylistCounter playlists={this.state.serverData.user.playlists}/>
               <HoursCounter playlists={this.state.serverData.user.playlists}/>
               <Filter/>
-              <Playlist/>
-              <Playlist/>
-              <Playlist/>
-              <Playlist/>
+              {playlistElements}
           </div> : <h1 style={defaultStyle}>Loading...</h1>
           }
       </div>
