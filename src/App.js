@@ -19,34 +19,10 @@ let fakeServerData = {
                     {name: 'B', duration: 1236},
                     {name: 'C', duration: 70000}
                     ]
-            },
-            {
-                name: 'Workout',
-                songs: [
-                    {name: 'A', duration: 1345},
-                    {name: 'B', duration: 1236},
-                    {name: 'C', duration: 70000}
-                ]
-            },
-            {
-                name: 'Slow Jams',
-                songs: [
-                    {name: 'A', duration: 1345},
-                    {name: 'B', duration: 1236},
-                    {name: 'C', duration: 70000}
-                ]
-            },
-            {
-                name: 'Focus',
-                songs: [
-                    {name: 'A', duration: 1345},
-                    {name: 'B', duration: 1236},
-                    {name: 'C', duration: 70000}
-                ]
             }
         ]
     }
-}
+};
 
 class PlaylistCounter extends Component {
     render() {
@@ -68,7 +44,7 @@ class HoursCounter extends Component {
         }, 0);
         return (
             <div style={{width: "40%", display: 'inline-block', color: defaultTextColor}}>
-                <h2>{Math.round(totalDuration/60)} hours</h2>
+                <h2>{Math.round(totalDuration/60)} minutes</h2>
             </div>
         );
     }
@@ -124,19 +100,42 @@ class App extends Component {
             user: {
                 name: data.display_name
             }
-        }))
+        }));
 
         fetch('https://api.spotify.com/v1/me/playlists', {
             headers: {'Authorization': 'Bearer ' + accessToken}
         }).then(response => response.json())
-        .then(data => this.setState({
-            playlists: data.items.map(item => {
-                console.log(data.items);
+        .then(playlistData => {
+            let playlists = playlistData.items;
+            let trackDataPromises = playlists.map(playlist => {
+                let responsePromise = fetch(playlist.tracks.href, {
+                    headers: {'Authorization': 'Bearer ' + accessToken}
+                });
+                let trackDataPromise = responsePromise
+                    .then(response => response.json());
+                return trackDataPromise;
+            });
+            let allTracksDataPromise = Promise.all(trackDataPromises);
+            let playlistsPromise = allTracksDataPromise.then(trackDatas => {
+                trackDatas.forEach((trackData, i) => {
+                    playlists[i].trackDatas = trackData.items
+                        .map(item => item.track)
+                        .map(trackData => ({
+                            name: trackData.name,
+                            duration: trackData.duration_ms / 1000
+                        }))
+                });
+                return playlists;
+            });
+            return playlistsPromise;
+        })
+        .then(playlists => this.setState({
+            playlists: playlists.map(item => {
                 return {
                     name: item.name,
                     // imageUrl: item.images.find(image => image.width == 640).url,
                     imageUrl: item.images[0].url,
-                    songs: []
+                    songs: item.trackDatas.slice(0,3)
                 };
             })
         }))
